@@ -1,4 +1,3 @@
-cordova.define("cordova-pdf-generator.pdf", function(require, exports, module) {
 /*global cordova, module*/
 
 
@@ -95,4 +94,3 @@ module.exports = {
     }
 };
 
-});
