@@ -91,9 +91,9 @@
 
 - (void)htmlToPDF:(CDVInvokedUrlCommand*)command
 {
-    if([[command argumentAtIndex:1] isEqualToString:@"Base64ToPdf"]) {
+    if([[command argumentAtIndex:1 withDefault:NULL] isEqualToString:@"Base64ToPdf"]) {
         NSError *error;
-        NSData *data = [command argumentAtIndex:2];
+        NSData *data = [command argumentAtIndex:2 withDefault:NULL];
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         NSString *path = [documentsDirectory stringByAppendingPathComponent:@"MyCourses.pdf"];
         [data writeToFile:path atomically:YES];
