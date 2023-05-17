@@ -1,7 +1,7 @@
 #import <Cordova/CDV.h>
 #import "BNHtmlPdfKit.h"
 
-@interface PDFGenerator : CDVPlugin <UIDocumentInteractionControllerDelegate>
+@interface PDFGenerator : CDVPlugin <UIDocumentInteractionControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 
 @property UIDocumentInteractionController *docController;

@@ -91,62 +91,79 @@
 
 - (void)htmlToPDF:(CDVInvokedUrlCommand*)command
 {
-    self.hasPendingOperation = YES;
-    
-
-    
-    NSString* url  = [command argumentAtIndex:0 withDefault:NULL];
-    NSString* data = [command argumentAtIndex:1 withDefault:NULL];
-    NSString* type =  [command argumentAtIndex:2 withDefault:@"A4"];
-    NSString* _landscape =  [command argumentAtIndex:3 withDefault:@"portrait"];
-    NSString* option     = [command argumentAtIndex:4 withDefault:@"base64"];
-    NSString* bUrl = [command argumentAtIndex:6 withDefault:NULL];
-
-    
-    BNPageSize pageSize;
-    BOOL landscape = NO;
-    NSURL *baseUrl = nil;
-    
-    if ([type isEqualToString:@"A3"]) {
-        pageSize = BNPageSizeA3;
-    }else{
-        pageSize = BNPageSizeA4;
-    }
-    
-    if ([_landscape isEqualToString:@"portrait"]) {
-        landscape = NO;
-    }else if([_landscape isEqualToString:@"landscape"]){
-        landscape = YES;
-    }
-    
-    if (bUrl != NULL) {
-        if ([bUrl isEqualToString:@"BUNDLE"]) {
-            baseUrl = [[NSBundle mainBundle] bundleURL];
-        } else {
-            baseUrl = [[NSURL alloc] initWithString:bUrl];
-        }
-    }
-    
-    if (url != NULL)
-        self.htmlPdfKit = [BNHtmlPdfKit saveUrlAsPdf:[NSURL URLWithString:url]
-                                            pageSize:pageSize
-                                         isLandscape:landscape
-                                             success:[self GetPDFHandler:command setOptions:option]
-                                             failure:[self GetErrorHandler:command]];
-    
-    if (data != NULL){
-        NSURL *base = [[NSBundle mainBundle] bundleURL];
+    if([[command argumentAtIndex:1] isEqualToString:@"Base64ToPdf"]) {
+        NSError *error;
+        NSData *data = [command argumentAtIndex:2];
+        NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *path = [documentsDirectory stringByAppendingPathComponent:@"MyCourses.pdf"];
+        [data writeToFile:path atomically:YES];
+        NSString *str = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
         
-        self.htmlPdfKit = [BNHtmlPdfKit saveHTMLAsPdf:data
-                                             pageSize:pageSize
-                                          isLandscape:landscape
-                                              baseUrl:base
-                                              success:[self GetPDFHandler:command setOptions:option]
-                                              failure:[self GetErrorHandler:command]];
-    
-    
-       
-          NSLog(@"url--> %@", [[base absoluteString] stringByDeletingLastPathComponent]);
+        NSData *pdfData = [NSData dataWithContentsOfFile:path];
+            NSArray *activityItems = [NSArray arrayWithObjects: pdfData, nil];
+            UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+            //if iPhone
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                UIViewController *top = [UIApplication sharedApplication].keyWindow.rootViewController;
+                [top presentViewController:activityController animated:YES completion:nil];
+            }
+    } else {
+        self.hasPendingOperation = YES;
+        
+
+        NSString* url  = [command argumentAtIndex:0 withDefault:NULL];
+        NSString* data = [command argumentAtIndex:1 withDefault:NULL];
+        NSString* type =  [command argumentAtIndex:2 withDefault:@"A4"];
+        NSString* _landscape =  [command argumentAtIndex:3 withDefault:@"portrait"];
+        NSString* option     = [command argumentAtIndex:4 withDefault:@"base64"];
+        NSString* bUrl = [command argumentAtIndex:6 withDefault:NULL];
+
+        
+        BNPageSize pageSize;
+        BOOL landscape = NO;
+        NSURL *baseUrl = nil;
+        
+        if ([type isEqualToString:@"A3"]) {
+            pageSize = BNPageSizeA3;
+        }else{
+            pageSize = BNPageSizeA4;
+        }
+        
+        if ([_landscape isEqualToString:@"portrait"]) {
+            landscape = NO;
+        }else if([_landscape isEqualToString:@"landscape"]){
+            landscape = YES;
+        }
+        
+        if (bUrl != NULL) {
+            if ([bUrl isEqualToString:@"BUNDLE"]) {
+                baseUrl = [[NSBundle mainBundle] bundleURL];
+            } else {
+                baseUrl = [[NSURL alloc] initWithString:bUrl];
+            }
+        }
+        
+        if (url != NULL)
+            self.htmlPdfKit = [BNHtmlPdfKit saveUrlAsPdf:[NSURL URLWithString:url]
+                                                pageSize:pageSize
+                                             isLandscape:landscape
+                                                 success:[self GetPDFHandler:command setOptions:option]
+                                                 failure:[self GetErrorHandler:command]];
+        
+        if (data != NULL){
+            NSURL *base =  [[NSURL alloc] initWithString:[[self.webViewEngine.URL absoluteString] stringByDeletingLastPathComponent]];
+            
+            self.htmlPdfKit = [BNHtmlPdfKit saveHTMLAsPdf:data
+                                                 pageSize:pageSize
+                                              isLandscape:landscape
+                                                  baseUrl:base
+                                                  success:[self GetPDFHandler:command setOptions:option]
+                                                  failure:[self GetErrorHandler:command]];
+        
+        
+           
+              NSLog(@"url--> %@", [[base absoluteString] stringByDeletingLastPathComponent]);
+        }
     }
 }
 
