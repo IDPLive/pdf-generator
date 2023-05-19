@@ -93,20 +93,19 @@
 {
     if([[command argumentAtIndex:1 withDefault:NULL] isEqualToString:@"Base64ToPdf"]) {
         NSError *error;
-        NSData *data = [command argumentAtIndex:2 withDefault:NULL];
+        NSString *data = [command argumentAtIndex:2 withDefault:NULL];
+        NSData *nsdataFromBase64String = [[NSData alloc]
+          initWithBase64EncodedString:data options:0];
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         NSString *path = [documentsDirectory stringByAppendingPathComponent:@"MyCourses.pdf"];
-        [data writeToFile:path atomically:YES];
-        NSString *str = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+        [nsdataFromBase64String writeToFile:path atomically:YES];
+        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[@"Test", [NSURL fileURLWithPath:path]] applicationActivities:nil];
         
-        NSData *pdfData = [NSData dataWithContentsOfFile:path];
-            NSArray *activityItems = [NSArray arrayWithObjects: pdfData, nil];
-            UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
             //if iPhone
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            //if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 UIViewController *top = [UIApplication sharedApplication].keyWindow.rootViewController;
-                [top presentViewController:activityController animated:YES completion:nil];
-            }
+                [top presentViewController:activityViewController animated:YES completion:nil];
+            //}
     } else {
         self.hasPendingOperation = YES;
         
