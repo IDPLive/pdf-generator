@@ -106,7 +106,7 @@ public class PDFGenerator extends CordovaPlugin {
     public void createPdfFile (String base64String, CallbackContext callbackContext) throws IOException {
         //final File dwldsPath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/MyPDFFileee" + ".pdf");
         final File fileRootPath = new File(cordova.getActivity().getExternalFilesDir(""), "");
-        final File dwldsPath = new File(fileRootPath + "/MyPDFFileee" + ".pdf");
+        final File dwldsPath = new File(fileRootPath + "/My Favourite Courses" + ".pdf");
         if (dwldsPath.exists()) {
             dwldsPath.delete();
         }

@@ -92,7 +92,24 @@
 - (void)htmlToPDF:(CDVInvokedUrlCommand*)command
 {
     if([[command argumentAtIndex:1 withDefault:NULL] isEqualToString:@"Base64ToPdf"]) {
-        NSError *error;
+        
+        NSString* printContents = [command argumentAtIndex:2 withDefault:NULL];
+
+            UIMarkupTextPrintFormatter *html = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:printContents];
+            UIPrintInteractionController* printController = [UIPrintInteractionController sharedPrintController];
+            [printController setPrintFormatter:html];
+            
+            UIPrintInfo* printInfo = [UIPrintInfo printInfo];
+            printInfo.jobName = @"My Favourite Courses";
+        printController.printInfo = printInfo;
+            [printController presentAnimated:YES completionHandler:^(UIPrintInteractionController *printInteractionController, BOOL completed, NSError *error) {
+                //
+            }];
+            
+        
+        
+        
+        /*NSError *error;
         NSString *data = [command argumentAtIndex:2 withDefault:NULL];
         NSData *nsdataFromBase64String = [[NSData alloc]
           initWithBase64EncodedString:data options:0];
@@ -105,7 +122,7 @@
             //if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 UIViewController *top = [UIApplication sharedApplication].keyWindow.rootViewController;
                 [top presentViewController:activityViewController animated:YES completion:nil];
-            //}
+            //}*/
     } else {
         self.hasPendingOperation = YES;
         
