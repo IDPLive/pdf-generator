@@ -21,6 +21,7 @@ import android.webkit.MimeTypeMap;
 import android.webkit.WebView;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 
 import com.itextpdf.text.pdf.codec.Base64;
@@ -71,6 +72,13 @@ public class PDFGenerator extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+        if(action.equals("GetPermissionForNotification")) {
+            String[] permissions = {"android.permission.POST_NOTIFICATIONS"};
+            Boolean isNotificationEnabled = NotificationManagerCompat.from(cordova.getActivity()).areNotificationsEnabled();
+            if(!isNotificationEnabled) {
+                PermissionHelper.requestPermissions(this, 1, permissions);
+            }
+        }
         if (action.equals("htmlToPDF")) {
             if(args.getString(1).equals("Base64ToPdf")) {
                 try {
